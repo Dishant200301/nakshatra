@@ -151,14 +151,15 @@ const CELLS = buildCells();
    GALLERY & QR
 ───────────────────────────────────────────── */
 const GALLERY = [
-  { url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=420&fit=crop", big: true },
-  { url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop" },
-  { url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=200&fit=crop" },
-  { url: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=200&fit=crop" },
-  { url: "https://images.unsplash.com/photo-1574197097716-2c7c2d1f4e76?w=400&h=200&fit=crop" },
-  { url: "https://images.unsplash.com/photo-1520637836862-4d197d17c93a?w=600&h=420&fit=crop", big: true },
-  { url: "https://images.unsplash.com/photo-1502005097973-6a7082348e28?w=400&h=200&fit=crop" },
-  { url: "https://images.unsplash.com/photo-1494526585095-c41746248156?w=400&h=200&fit=crop" },
+  { url: "https://images.unsplash.com/photo-1540306155609-b615c82fdcae?w=800&h=1200&fit=crop", big: true },
+  { url: "https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=600&h=300&fit=crop" },
+  { url: "https://images.unsplash.com/photo-1533154683836-84ea7a0bc310?w=600&h=300&fit=crop" },
+  { url: "https://images.unsplash.com/photo-1542314831-c6a4d1409384?w=800&h=1200&fit=crop", big: true },
+  { url: "https://images.unsplash.com/photo-1558280626-d66827fb33f7?w=600&h=300&fit=crop" },
+  { url: "https://images.unsplash.com/photo-1577708575005-2d6de5ebade6?w=800&h=1200&fit=crop", big: true },
+  { url: "https://images.unsplash.com/photo-1587836371711-2090412e8071?w=600&h=300&fit=crop" },
+  { url: "https://images.unsplash.com/photo-1574197097716-2c7c2d1f4e76?w=600&h=300&fit=crop" },
+  { url: "https://images.unsplash.com/photo-1536411396596-f95af3309a4d?w=600&h=300&fit=crop" }
 ];
 
 function QRCode() {
@@ -187,6 +188,13 @@ function QRCode() {
    MAIN APP
 ───────────────────────────────────────────── */
 export default function NakshatraApp() {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const [statusOn, setStatusOn] = useState(false);
   const [viewMode, setViewMode] = useState("3D");
   const [northTop, setNorthTop] = useState(false);
@@ -242,7 +250,7 @@ export default function NakshatraApp() {
 
   // Pan & Zoom
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(() => window.innerWidth <= 768 ? 0.45 : 1);
   const dragging = useRef(false);
   const dragRef = useRef<{ x: number, y: number } | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -378,25 +386,25 @@ export default function NakshatraApp() {
 
       {/* ── HEADER ── */}
       <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 52, zIndex: 70,
-        display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 18px"
+        position: "absolute", top: 0, left: 0, right: 0, height: isMobile ? 44 : 52, zIndex: 70,
+        display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "0 12px" : "0 18px"
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <img src="/image.png" alt="Nakshatra Logo" style={{ height: 34, objectFit: "contain" }} />
-          <span style={{ color: "#e8860a", fontWeight: "800", fontSize: 22, letterSpacing: 2.5 }}>NAKSHATRA</span>
+          <img src="/image.png" alt="Nakshatra Logo" style={{ height: isMobile ? 24 : 34, objectFit: "contain" }} />
+          <span style={{ color: "#e8860a", fontWeight: "800", fontSize: isMobile ? 16 : 22, letterSpacing: isMobile ? 1.5 : 2.5 }}>NAKSHATRA</span>
         </div>
         <div style={{
           width: 36, height: 36, borderRadius: 7, cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center"
         }}>
-          <img src="/favicon.ico" alt="Favicon" style={{ width: 36, height: 36, objectFit: "contain" }} />
+          <img src="/favicon.ico" alt="Favicon" style={{ width: isMobile ? 28 : 36, height: isMobile ? 28 : 36, objectFit: "contain" }} />
         </div>
       </div>
 
       {/* ── COMPASS ── */}
       <button onClick={() => setNorthTop(v => !v)} title="Toggle north-up"
         style={{
-          position: "absolute", top: 60, left: 16, zIndex: 70, width: 38, height: 38,
+          position: "absolute", top: isMobile ? 52 : 60, left: isMobile ? 12 : 16, zIndex: 70, width: 38, height: 38,
           background: "rgba(18,18,18,0.88)", border: "1.5px solid #444",
           borderRadius: "50%", cursor: "pointer", display: "flex", flexDirection: "column",
           alignItems: "center", justifyContent: "center", gap: 0, padding: 0,
@@ -558,25 +566,13 @@ export default function NakshatraApp() {
         </div>
       </div>
 
-      {/* ── SHARE BUTTON (right side) ── */}
-      <button className="ctrl"
-        onClick={() => setModal("share")}
-        style={{
-          position: "absolute", right: 24, top: "50%", transform: "translateY(-50%)",
-          width: 44, height: 44, borderRadius: "50%", zIndex: 60,
-          background: "transparent", border: "1px solid #363636"
-        }} title="Share">
-        <svg fill="currentColor" width="20" height="20" viewBox="0 0 24 24" stroke="none">
-          <path d="M12.9813 5.37893C13.1166 4.79374 13.9056 4.63945 14.2847 5.12458L19.3496 11.6027C19.6457 11.9815 19.6457 12.5185 19.3496 12.8973L14.2847 19.3754C13.9056 19.8606 13.1166 19.7063 12.9813 19.1211L12.5516 17.2625C12.4287 16.7314 11.9744 16.3533 11.4312 16.3315C9.43265 16.2514 6.70327 16.6343 4.41727 18.0665C3.8966 18.3927 3.2307 17.8996 3.42861 17.332C4.19237 15.1424 5.67931 12.4468 8.04938 10.7495C9.1831 9.93721 10.4357 9.3879 11.6506 9.04944C12.1643 8.90632 12.5804 8.50293 12.6974 7.99723L12.9813 5.37893Z" stroke="#ccc" strokeWidth="1.5" />
-        </svg>
-      </button>
-
       {/* ── SELECTED PLOT CARD ── */}
       {selPlot && (
         <div style={{
-          position: "absolute", bottom: 236, right: 24, zIndex: 65,
+          position: "absolute", bottom: isMobile ? "unset" : 236, top: isMobile ? 104 : "unset",
+          left: isMobile ? 12 : "unset", right: isMobile ? 12 : 24, zIndex: 65,
           background: "rgba(18,18,18,0.97)", border: "1px solid #2e2e2e",
-          borderRadius: 13, padding: "14px 18px", minWidth: 200,
+          borderRadius: 13, padding: isMobile ? "10px 14px" : "14px 18px", minWidth: 200,
           boxShadow: "0 6px 28px rgba(0,0,0,0.6)", backdropFilter: "blur(8px)"
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
@@ -601,80 +597,94 @@ export default function NakshatraApp() {
         </div>
       )}
 
-      {/* ── BOTTOM-RIGHT CONTROLS ── */}
+      {/* ── BOTTOM-RIGHT CONTROLS & SHARE BUTTON ── */}
       <div style={{
-        position: "absolute", bottom: 24, right: 24, zIndex: 60,
-        display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-end", width: 340
+        position: "absolute", bottom: isMobile ? 16 : 24, left: isMobile ? 12 : "unset", right: isMobile ? 12 : 24, zIndex: 60,
+        display: "flex", flexDirection: "column", gap: isMobile ? 8 : 12, alignItems: "flex-end", width: isMobile ? "auto" : 340
       }}>
 
-        {/* Top Row: Legend (if statusOn) + Status Toggle + Buttons */}
+        {/* Top Layer: Legend + View Controls + Share Button */}
         <div style={{ width: "100%", display: "flex", alignItems: "flex-end", justifyContent: "space-between", position: "relative" }}>
 
-          {statusOn && (
-            <div style={{
-              position: "absolute", left: 0, bottom: 60,
-              display: "flex", flexDirection: "column", gap: 10,
-              paddingLeft: 4
-            }}>
-              {[["#4a9fd4", "Available"], ["#e05252", "Sold"], ["#d4a017", "Builder"]].map(([col, lbl]) => (
-                <div key={lbl} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: col, boxShadow: `0 0 6px ${col}77` }} />
-                  <span style={{ fontSize: 14, color: "#eee", fontWeight: "500" }}>{lbl}</span>
-                </div>
-              ))}
-            </div>
-          )}
+          {/* Legend + Status Toggle */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {statusOn && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingLeft: 6, marginBottom: 4 }}>
+                {[
+                  ["#5189f0", "Available"],
+                  ["#d96272", "Sold"],
+                  ["#debf58", "Builder"]
+                ].map(([col, lbl]) => (
+                  <div key={lbl} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: col }} />
+                    <span style={{ fontSize: 14, color: "#fff", fontWeight: "600" }}>{lbl}</span>
+                  </div>
+                ))}
+              </div>
+            )}
 
-          {/* Status Toggle */}
-          <div style={{
-            background: "rgba(30,30,30,0.4)", borderRadius: 30, padding: "10px 18px",
-            display: "flex", alignItems: "center", gap: 14, border: "1px solid rgba(255,255,255,0.1)",
-            backdropFilter: "blur(5px)"
-          }}>
-            <span style={{ fontSize: 14, color: "#6a9cd9", fontWeight: "500" }}>Status</span>
-            <div onClick={() => setStatusOn(v => !v)}
-              style={{
-                width: 36, height: 20, borderRadius: 10, cursor: "pointer", position: "relative",
-                background: statusOn ? "#5a7e44" : "#4a4a4a", transition: "background 0.3s",
-                boxShadow: "inset 0 1px 3px rgba(0,0,0,0.5)"
-              }}>
-              <div style={{
-                position: "absolute", top: 2, left: statusOn ? 18 : 2, width: 16, height: 16,
-                borderRadius: "50%", background: "#fff",
-                transition: "left 0.3s cubic-bezier(0.34,1.56,0.64,1)",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.4)"
-              }} />
+            <div style={{
+              background: "#262626", borderRadius: 30, padding: isMobile ? "8px 12px" : "10px 18px",
+              display: "flex", alignItems: "center", gap: isMobile ? 8 : 14, border: "1px solid #3c3c3c"
+            }}>
+              <span style={{ fontSize: 14, color: "#7da2db", fontWeight: "400" }}>Status</span>
+              <div onClick={() => setStatusOn(v => !v)}
+                style={{
+                  width: 36, height: 20, borderRadius: 10, cursor: "pointer", position: "relative",
+                  background: statusOn ? "#799e5a" : "#4a4a4a", transition: "background 0.3s"
+                }}>
+                <div style={{
+                  position: "absolute", top: 2, left: statusOn ? 18 : 2, width: 16, height: 16,
+                  borderRadius: "50%", background: "#fff",
+                  transition: "left 0.3s cubic-bezier(0.34,1.56,0.64,1)",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.4)"
+                }} />
+              </div>
             </div>
           </div>
 
-          {/* Map / 3D / Home Buttons */}
-          <div style={{ display: "flex", gap: 10 }}>
-            <button className={`ctrl ${satVisible ? "active" : ""}`} onClick={toggleSat}
-              style={{ width: 44, height: 44, borderRadius: "50%", background: "transparent", border: "1px solid rgba(255,255,255,0.15)", color: "#eee" }} title="Satellite">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 3v18" />
-                <path d="M15 3v18" />
-                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-                <circle cx="12" cy="12" r="2.5" />
-                <path d="M14.5 9.5L16 8" />
+          {/* Controls Stack */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-end" }}>
+            {/* Share Button (Above Row) */}
+            <button className="ctrl" onClick={() => setModal("share")}
+              style={{
+                width: 44, height: 44, borderRadius: "50%",
+                background: "#262626", border: "1px solid #3c3c3c", color: "#ccc"
+              }} title="Share">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12.9813 5.37893C13.1166 4.79374 13.9056 4.63945 14.2847 5.12458L19.3496 11.6027C19.6457 11.9815 19.6457 12.5185 19.3496 12.8973L14.2847 19.3754C13.9056 19.8606 13.1166 19.7063 12.9813 19.1211L12.5516 17.2625C12.4287 16.7314 11.9744 16.3533 11.4312 16.3315C9.43265 16.2514 6.70327 16.6343 4.41727 18.0665C3.8966 18.3927 3.2307 17.8996 3.42861 17.332C4.19237 15.1424 5.67931 12.4468 8.04938 10.7495C9.1831 9.93721 10.4357 9.3879 11.6506 9.04944C12.1643 8.90632 12.5804 8.50293 12.6974 7.99723L12.9813 5.37893Z" fill="currentColor" stroke="none" />
               </svg>
             </button>
 
-            <button className="ctrl" onClick={() => setViewMode(v => v === "3D" ? "2D" : "3D")}
-              style={{ width: 44, height: 44, borderRadius: "50%", background: "transparent", border: "1px solid rgba(255,255,255,0.15)", fontSize: 14, fontWeight: "700", color: "#eee" }}>
-              {viewMode}
-            </button>
+            {/* Map / 3D / Home Buttons */}
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className={`ctrl ${satVisible ? "active" : ""}`} onClick={toggleSat}
+                style={{ width: 44, height: 44, borderRadius: "50%", background: "#262626", border: "1px solid #3c3c3c", color: "#eee" }} title="Satellite View">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14.2 16.6l-5.2 2.4-6-3V4l6-3 6 3 6-3v10.5" />
+                  <path d="M9 3v18" />
+                  <path d="M15 3v8" />
+                  <circle cx="18" cy="18" r="4" />
+                  <line x1="21" y1="21" x2="22.5" y2="22.5" />
+                </svg>
+              </button>
 
-            <button className="ctrl" onClick={resetView} style={{ width: 44, height: 44, borderRadius: "50%", background: "transparent", border: "1px solid rgba(255,255,255,0.15)", color: "#eee" }} title="Reset">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-5" />
-                <path d="M9 22V12h6v10" />
-              </svg>
-            </button>
+              <button className="ctrl" onClick={() => setViewMode(v => v === "3D" ? "2D" : "3D")}
+                style={{ width: 44, height: 44, borderRadius: "50%", background: "#262626", border: "1px solid #3c3c3c", fontSize: 13, fontWeight: "800", color: "#eee" }}>
+                {viewMode}
+              </button>
+
+              <button className="ctrl" onClick={resetView} style={{ width: 44, height: 44, borderRadius: "50%", background: "#262626", border: "1px solid #3c3c3c", color: "#eee" }} title="Reset View">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-5" />
+                  <path d="M9 22V12h6v10" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Search */}
+        {/* Search Plot Bar */}
         <div style={{ position: "relative", width: "100%" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="#ccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -684,16 +694,16 @@ export default function NakshatraApp() {
           <input value={searchVal} onChange={e => setSearchVal(e.target.value)}
             placeholder="Search Plot"
             style={{
-              width: "100%", height: 46, boxSizing: "border-box",
-              background: "rgba(30,30,30,0.4)", backdropFilter: "blur(5px)",
-              border: "1px solid rgba(255,255,255,0.1)",
+              width: "100%", height: isMobile ? 40 : 46, boxSizing: "border-box",
+              background: "#262626",
+              border: "1px solid #3c3c3c",
               borderRadius: 24, paddingLeft: 46, paddingRight: 16,
-              color: "#6a9cd9", fontSize: 14, outline: "none", transition: "border-color 0.2s"
+              color: "#8c9cae", fontSize: 14, outline: "none", transition: "border-color 0.2s"
             }} />
         </div>
 
-        {/* Gallery | Info | Locate */}
-        <div style={{ display: "flex", gap: 10, width: "100%", justifyContent: "space-between" }}>
+        {/* Gallery | Info | Locate Row */}
+        <div style={{ display: "flex", gap: isMobile ? 6 : 10, width: "100%", justifyContent: "space-between" }}>
           {[
             {
               lbl: "Gallery", fn: () => setModal("gallery"),
@@ -710,13 +720,13 @@ export default function NakshatraApp() {
           ].map(({ lbl, fn, ic }) => (
             <button key={lbl} onClick={fn}
               style={{
-                flex: 1, background: "rgba(30,30,30,0.4)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(5px)",
-                borderRadius: 24, height: 46, padding: "0 16px",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                cursor: "pointer", color: "#eee", fontSize: 14, fontWeight: "400", transition: "background 0.15s, border-color 0.15s"
+                flex: 1, background: "#262626", border: "1px solid #3c3c3c",
+                borderRadius: 24, height: isMobile ? 40 : 46, padding: isMobile ? "0 4px" : "0 16px",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: isMobile ? 4 : 8,
+                cursor: "pointer", color: "#eee", fontSize: isMobile ? 12 : 14, fontWeight: "400", transition: "background 0.15s, border-color 0.15s"
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(50,50,50,0.6)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)" }}
-              onMouseLeave={e => { e.currentTarget.style.background = "rgba(30,30,30,0.4)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)" }}>
+              onMouseEnter={e => { e.currentTarget.style.background = "#333"; e.currentTarget.style.borderColor = "#444" }}
+              onMouseLeave={e => { e.currentTarget.style.background = "#262626"; e.currentTarget.style.borderColor = "#3c3c3c" }}>
               {ic}{lbl}
             </button>
           ))}
@@ -763,8 +773,9 @@ export default function NakshatraApp() {
               .gal-wrap::-webkit-scrollbar-thumb:hover { background: #666; }
             `}</style>
             <div className="gal-wrap" style={{
-              flex: 1, overflowY: "auto", padding: "0 18px 18px 18px",
-              display: "grid", gridTemplateColumns: "repeat(4,1fr)", gridAutoRows: "180px", gap: 10,
+              flex: 1, overflowY: "auto", padding: isMobile ? "0 10px 10px 10px" : "0 18px 18px 18px",
+              display: "grid", gridTemplateColumns: isMobile ? "repeat(2,1fr)" : "repeat(4,1fr)", gridAutoRows: isMobile ? "120px" : "180px", gap: isMobile ? 6 : 10,
+              gridAutoFlow: "dense",
               scrollbarWidth: "thin", scrollbarColor: "#444 transparent"
             }}>
               {GALLERY.map((img, i) => (
@@ -780,10 +791,10 @@ export default function NakshatraApp() {
       {modal === "info" && (
         <div style={{
           position: "fixed", inset: 0, background: "rgba(0,0,0,0.78)", zIndex: 100,
-          display: "flex", alignItems: "center", justifyContent: "center"
+          display: "flex", alignItems: "center", justifyContent: "center", padding: isMobile ? 16 : 0
         }}
           onClick={() => setModal(null)}>
-          <div style={{ background: "#222", borderRadius: 16, padding: 36, maxWidth: 520, width: "90%", position: "relative" }}
+          <div style={{ background: "#222", borderRadius: 16, padding: isMobile ? 24 : 36, maxWidth: 520, width: isMobile ? "100%" : "90%", position: "relative", boxSizing: "border-box" }}
             onClick={e => e.stopPropagation()}>
             <button onClick={() => setModal(null)}
               style={{
@@ -821,10 +832,10 @@ export default function NakshatraApp() {
       {modal === "share" && (
         <div style={{
           position: "fixed", inset: 0, background: "rgba(0,0,0,0.78)", zIndex: 100,
-          display: "flex", alignItems: "center", justifyContent: "center"
+          display: "flex", alignItems: "center", justifyContent: "center", padding: isMobile ? 16 : 0
         }}
           onClick={() => setModal(null)}>
-          <div style={{ background: "#1a1a1a", borderRadius: 16, padding: 28, width: 310, position: "relative" }}
+          <div style={{ background: "#1a1a1a", borderRadius: 16, padding: isMobile ? 20 : 28, width: isMobile ? "100%" : 310, maxWidth: 310, boxSizing: "border-box", position: "relative" }}
             onClick={e => e.stopPropagation()}>
             <button onClick={() => setModal(null)}
               style={{
